@@ -3,10 +3,22 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { LogoPanelComponent } from './panels/logo-panel/logo-panel.component';
+import { FilterPanelComponent } from './panels/filter-panel/filter-panel.component';
+import { TicketsPanelComponent } from './panels/tickets-panel/tickets-panel.component';
+import { ButtonComponent } from './components/button/button.component';
+import { CheckboxComponent } from './components/checkbox/checkbox.component';
+import { TicketComponent } from './components/ticket/ticket.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LogoPanelComponent,
+    FilterPanelComponent,
+    TicketsPanelComponent,
+    ButtonComponent,
+    CheckboxComponent,
+    TicketComponent
   ],
   imports: [
     BrowserModule,
