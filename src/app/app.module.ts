@@ -9,6 +9,8 @@ import { TicketsPanelComponent } from './panels/tickets-panel/tickets-panel.comp
 import { ButtonComponent } from './components/button/button.component';
 import { CheckboxComponent } from './components/checkbox/checkbox.component';
 import { TicketComponent } from './components/ticket/ticket.component';
+import { CommonModule } from "@angular/common";
+import {FormsModule} from "@angular/forms";
 
 @NgModule({
   declarations: [
@@ -22,7 +24,9 @@ import { TicketComponent } from './components/ticket/ticket.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    CommonModule,
+    FormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

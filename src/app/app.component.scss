@@ -1,9 +1,29 @@
 :host {
-  display: block;
+  display: flex;
+  flex-wrap: wrap;
   width: 100vw;
   height: 100vh;
   margin: 20px auto;
   max-width: 960px;
+  align-content: flex-start;
+}
 
+.logo-panel {
+  display: block;
+  width: 100%;
+}
+
+.filter-panel{
+  display: block;
+  max-width: 30%;
+  width: 232px;
+  margin: 20px 10px 20px 100px;
+}
+
+
+.tickets-panel {
+  display: block;
+  max-width: 70%;
+  margin: 20px 100px 20px 10px;
 }
 
