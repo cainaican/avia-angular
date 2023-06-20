@@ -1,1 +1,24 @@
-<p>tickets-panel works!</p>
+<div>
+  <app-button
+    [textButton]="'Самый дешевый'"
+    [roundCornerClass]="eRoundCorner().left"
+    [sizeButtonClass]=""
+
+  ></app-button>
+
+  <app-button
+    [textButton]="'Самый быстрый'"
+
+  ></app-button>
+
+  <app-button
+    [textButton]="'оптимальный'"
+    [roundCornerClass]="eRoundCorner().right"
+
+  ></app-button>
+</div>
+<div>
+  <app-ticket>
+
+  </app-ticket>
+</div>
