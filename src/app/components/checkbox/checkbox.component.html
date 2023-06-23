@@ -1,1 +1,8 @@
-<p>checkbox works!</p>
+<label class="container">
+  <ng-content></ng-content>
+  <input type="checkbox"
+         class="checkbox"
+         (change)="changeState($event)"
+  >
+  <span class="checkmark"></span>
+</label>

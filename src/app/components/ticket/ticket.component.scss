@@ -1,0 +1,62 @@
+:host {
+  display: flex;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  width: 502px;
+  padding: 20px;
+  margin: 10px 0px;
+
+  background-color: #FFFFFF;
+  border-radius: 4px;
+  box-shadow: 0px 2px 8px 0px rgba(0, 0, 0, 0.10);
+}
+
+.price {
+  color: var(--accent-color);
+  display: block;
+  height: 36px;
+  width: 50%;
+  margin-bottom: 16px;
+
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 24px;
+}
+.company-logo {
+  display: flex;
+  justify-content: flex-end;
+  width: 50%;
+  height: 36px;
+  margin-bottom: 16px;
+
+}
+.flights {
+  display: flex;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.from-to, .flight-time,.transfers {
+  display: flex;
+  flex-direction: column;
+  width: 141px;
+  margin-right: 10px;
+}
+
+.from-to-dest, .flight-time-caption, .transfers-number {
+  color: var(--secondary-text-color);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 18px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.from-to-time, .flight-time-hours, .transfers-cities  {
+  color: var(--text-color);
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 21px;
+}
+
