@@ -1,18 +1,28 @@
-<div class="price">13400</div>
-<div class="company-logo">
-  <img src="./assets/s7-logo.svg" alt="">
-</div>
-<div class="flights">
-  <div class="from-to">
-    <div class="from-to-dest" > mow-hkt </div>
-    <div class="from-to-time" > 10:45 – 08:00 </div>
+<ng-template [ngIf]="model">
+  <div class="price"> {{model.price | currency: 'RUB':'symbol-narrow': '4.0'}} </div>
+  <div class="company-logo" *ngIf="company$ | async as comp">
+    <img src="./assets/{{comp.logo}}" alt="company logotype">
   </div>
-  <div class="flight-time">
-    <div class="flight-time-caption" > В пути </div>
-    <div class="flight-time-hours" > 21ч 15м </div>
-  </div>
-  <div class="transfers">
-    <div class="transfers-number" > 2 пересадки </div>
-    <div class="transfers-cities" > HKG, JNB </div>
-  </div>
-</div>
+
+  <!-- <ng-template *ngIf="segments$ | async as seg"> -->
+    <div class="flights" *ngFor="let segm of segments$ | async" >
+        <div class="from-to">
+          <div class="from-to-dest" > {{segm.origin}} - {{segm.destination}} </div>
+          <div class="from-to-time" > {{segm.dateStart | date : "HH:mm"}} – {{segm.dateEnd | date: "HH:mm"}} </div>
+        </div>
+        <div class="flight-time">
+          <div class="flight-time-caption" > В пути </div>
+          <div class="flight-time-hours" > {{segm.duration | durationFormat: 'ms':'ddhhmmss'}}</div>
+        </div>
+        <div class="transfers">
+          <div class="transfers-number" *ngIf="segm.stops.length > 0; else noStops"> {{segm.stops.length | inclinator}} </div>
+          <ng-template #noStops>
+            <div class="transfers-number"> Нет пересадок </div>
+          </ng-template>
+          <div class="transfers-cities" > <span *ngFor="let stop of segm.stops; index as i; last as isLast">{{stop}}<i *ngIf="!isLast">, </i> </span> </div>
+        </div>
+      </div>
+  <!-- </ng-template>   -->
+  
+</ng-template>
+

@@ -10,7 +10,6 @@ export class CheckboxComponent {
   public state: boolean = false;
 
   changeState(val: any) {
-    console.log(val);
     this.state = !this.state;
   }
 

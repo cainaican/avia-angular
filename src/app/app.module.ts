@@ -11,6 +11,9 @@ import { CheckboxComponent } from './components/checkbox/checkbox.component';
 import { TicketComponent } from './components/ticket/ticket.component';
 import { CommonModule } from "@angular/common";
 import {FormsModule} from "@angular/forms";
+import {HttpClientModule} from "@angular/common/http";
+import { DurationFormatPipe } from './pipes/duration-format/duration-format.pipe';
+import { Inclinator } from './pipes/inclinator/inclinator.pipe';
 
 @NgModule({
   declarations: [
@@ -20,13 +23,16 @@ import {FormsModule} from "@angular/forms";
     TicketsPanelComponent,
     ButtonComponent,
     CheckboxComponent,
-    TicketComponent
+    TicketComponent,
+    DurationFormatPipe,
+    Inclinator
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     CommonModule,
-    FormsModule
+    FormsModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
