@@ -1,8 +1,9 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input} from '@angular/core';
 import {ERoundCorner} from "../../components/button/button.component";
 import {TicketsService} from "../../services/tickets.service";
 import {ITicket} from "../../models/i-ticket";
-import { Observable } from 'rxjs';
+import { Observable, take } from 'rxjs';
+import { tick } from '@angular/core/testing';
 
 @Component({
   selector: 'app-tickets-panel',
@@ -13,13 +14,20 @@ import { Observable } from 'rxjs';
 export class TicketsPanelComponent {
 
   public tickets$: Observable<ITicket[]> | null = null;
+  public tickets: ITicket[]| null = null;
+  public ticketsForModel: ITicket[]| null = null;
 
   constructor(
-    private _ticketsService: TicketsService
+    private _ticketsService: TicketsService,
+    private _cdr: ChangeDetectorRef,
   ) {
-    // this.getTickets();
-
-    this.tickets$ = this._ticketsService.getTickets();
+    this._ticketsService.getTickets().pipe().subscribe({
+      next: (tickets) => {
+        this.tickets = tickets;
+        this.ticketsForModel = tickets.slice(0,5);
+        this._cdr.markForCheck();
+      }
+    });
   }
 
 

@@ -17,9 +17,9 @@
   ></app-button>
 </div>
 <div>
-  <ng-template [ngIf]="tickets$">
-    <ng-template ngFor let-ticket [ngForOf]="tickets$ | async">
-      <app-ticket [model]="ticket">
+  <ng-template [ngIf]="ticketsForModel">
+    <ng-template ngFor let-item [ngForOf]="ticketsForModel">
+      <app-ticket [model]="item">
     
       </app-ticket>
     </ng-template>
