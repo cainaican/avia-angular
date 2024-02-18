@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChange } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ICompany, ISegment, ITicket } from 'src/app/models/i-ticket';
 import { TicketsService } from 'src/app/services/tickets.service';
@@ -22,6 +22,8 @@ export class TicketComponent implements OnInit {
   ngOnInit(): void {
     this.getFullInformationOfTicket();
   }
+
+  
 
   public getFullInformationOfTicket() {
     this.company$ = this._ticketsService.getCompany(this.model.companyId);

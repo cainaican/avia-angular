@@ -2,26 +2,35 @@
   <app-button
     [textButton]="'Самый дешевый'"
     [roundCornerClass]="eRoundCorner().left"
+    (click)="sortForChipest()"
 
   ></app-button>
 
   <app-button
     [textButton]="'Самый быстрый'"
+    (click)="sortForFastest()"
 
   ></app-button>
 
   <app-button
     [textButton]="'оптимальный'"
     [roundCornerClass]="eRoundCorner().right"
+    (click)="sortForOptimal()"
 
   ></app-button>
 </div>
 <div>
-  <ng-template [ngIf]="ticketsForModel">
-    <ng-template ngFor let-item [ngForOf]="ticketsForModel">
+  <ng-container *ngIf="ticketsForModel; let ticket">
+    <ng-container *ngFor="let item of ticketsForModel; trackBy: trackById" >
       <app-ticket [model]="item">
     
       </app-ticket>
-    </ng-template>
-  </ng-template>
+    </ng-container>
+  </ng-container>
+
+  <app-button [textButton]="'Загрузить еще'" 
+              [sizeButtonClass]="eSizeButton().big" 
+              [roundCornerClass]="eRoundCorner().both" 
+              (click)="loadNewTickets($event)"
+  ></app-button>
 </div>
