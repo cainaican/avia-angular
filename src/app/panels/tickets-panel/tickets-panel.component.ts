@@ -159,8 +159,8 @@ export class TicketsPanelComponent implements OnInit {
     
   }
 
-  trackById(_index: number, item: ITicket): ITicket['segments'] {
-    return item.segments;
-}
+  trackById(_index: number, item: ITicket): string {
+    return `${item.id} ${item.segments.length}`;
+  }
 
 }
