@@ -6,9 +6,9 @@ import {Observable, from} from 'rxjs';
 import { FilterPanelService } from '../filter-panel/filter-panel.service';
 
 @Component({
-  selector: 'app-tickets-panel',
-  templateUrl: './tickets-panel.component.html',
-  styleUrls: ['./tickets-panel.component.scss'],
+  selector: "app-tickets-panel",
+  templateUrl: "./tickets-panel.component.html",
+  styleUrls: ["./tickets-panel.component.scss"],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TicketsPanelComponent implements OnInit {
