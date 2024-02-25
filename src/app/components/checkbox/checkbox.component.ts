@@ -1,4 +1,4 @@
-import {Component, DoCheck, Input} from '@angular/core';
+import {Component, DoCheck, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'app-checkbox',
@@ -7,10 +7,12 @@ import {Component, DoCheck, Input} from '@angular/core';
 })
 export class CheckboxComponent {
 
-  public state: boolean = false;
+  @Input() state!: boolean;
+  @Output() stateChange: EventEmitter<boolean> = new EventEmitter();
 
   changeState(val: any) {
     this.state = !this.state;
+    this.stateChange.emit(this.state);
   }
 
 }

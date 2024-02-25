@@ -14,6 +14,7 @@ import {FormsModule} from "@angular/forms";
 import {HttpClientModule} from "@angular/common/http";
 import { DurationFormatPipe } from './pipes/duration-format/duration-format.pipe';
 import { Inclinator } from './pipes/inclinator/inclinator.pipe';
+import {FilterPanelService} from './panels/filter-panel/filter-panel.service';
 
 @NgModule({
   declarations: [
@@ -34,7 +35,9 @@ import { Inclinator } from './pipes/inclinator/inclinator.pipe';
     FormsModule,
     HttpClientModule
   ],
-  providers: [],
+  providers: [
+    FilterPanelService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

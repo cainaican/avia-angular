@@ -32,7 +32,9 @@
 }
 
 .container:hover input ~ .checkmark {
-  background-color: #ccc;
+  margin: -1px;
+  height: 19px;
+  width: 19px;
 }
 
 .checkmark:after {

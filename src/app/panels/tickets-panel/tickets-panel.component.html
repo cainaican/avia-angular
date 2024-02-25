@@ -21,7 +21,7 @@
 </div>
 <div>
   <ng-container *ngIf="ticketsForModel; let ticket">
-    <ng-container *ngFor="let item of ticketsForModel; trackBy: trackById" >
+    <ng-container *ngFor="let item of ticketsForModel; trackBy: trackByIdAndIndex" >
       <app-ticket [model]="item">
     
       </app-ticket>

@@ -26,8 +26,8 @@ export class TicketComponent implements OnInit {
   
 
   public getFullInformationOfTicket() {
-    this.company$ = this._ticketsService.getCompany(this.model.companyId);
-    this.segments$ = this._ticketsService.getSegments(this.model.segments);
+    this.company$ = this._ticketsService.getCompanyById(this.model.companyId);
+    this.segments$ = this._ticketsService.getSegmentsByIds(this.model.segments);
   }
 
 
