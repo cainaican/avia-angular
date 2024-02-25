@@ -15,6 +15,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { DurationFormatPipe } from './pipes/duration-format/duration-format.pipe';
 import { Inclinator } from './pipes/inclinator/inclinator.pipe';
 import {FilterPanelService} from './panels/filter-panel/filter-panel.service';
+import { StoreModule } from '@ngrx/store';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import {FilterPanelService} from './panels/filter-panel/filter-panel.service';
     AppRoutingModule,
     CommonModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    StoreModule.forRoot({}, {})
   ],
   providers: [
     FilterPanelService
