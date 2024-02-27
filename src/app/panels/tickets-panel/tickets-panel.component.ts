@@ -1,238 +1,240 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
-import {ERoundCorner, ESizeButton} from "../../components/button/button.component";
-import {TicketsService} from "../../services/tickets.service";
-import {ISegment, ITicket} from "../../models/i-ticket";
-import {Observable, from} from 'rxjs';
-import { FilterPanelService } from '../filter-panel/filter-panel.service';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from "@angular/core";
+import { from } from "rxjs";
+import { ERoundCorner, ESizeButton } from "../../components/button/button.component";
+import { TicketsService } from "../../services/tickets.service";
+import { ISegment, ITicket } from "../../models/i-ticket";
+import { FilterPanelService } from "../filter-panel/filter-panel.service";
 
 @Component({
-  selector: "app-tickets-panel",
-  templateUrl: "./tickets-panel.component.html",
-  styleUrls: ["./tickets-panel.component.scss"],
-  changeDetection: ChangeDetectionStrategy.OnPush
+	selector: "app-tickets-panel",
+	templateUrl: "./tickets-panel.component.html",
+	styleUrls: ["./tickets-panel.component.scss"],
+	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TicketsPanelComponent implements OnInit {
+	ticketsForModel: ITicket[] | null = null;
 
-  public ticketsForModel: ITicket[] | null = null;
+	countOfTicketsOnThePage = 5;
+	countOfTicketsToload = 5;
 
-  public countOfTicketsOnThePage: number = 5;
-  public countOfTicketsToload: number = 5;
+	constructor(
+		private readonly _ticketsService: TicketsService,
+		private readonly _filterPanelService: FilterPanelService,
+		private readonly _cdr: ChangeDetectorRef, // eslint-disable-next-line no-empty-function
+	) {}
 
-  constructor(
-    private _ticketsService: TicketsService,
-    private _filterPanelService: FilterPanelService,
-    private _cdr: ChangeDetectorRef,
-  ) {}
+	ngOnInit(): void {
+		this._ticketsService.getFilteredTickets().subscribe({
+			next: (tickets) => {
+				this.ticketsForModel = tickets.slice(0, this.countOfTicketsOnThePage);
+				this._cdr.markForCheck();
+			},
+		});
 
-  ngOnInit(): void {
-    this._ticketsService.getFilteredTickets().subscribe({
-      next: (tickets) => {
-        this.ticketsForModel = tickets.slice(0,this.countOfTicketsOnThePage);
-        this._cdr.markForCheck();
-      }
-    });
+		from(this._filterPanelService.filtersStateListener$).subscribe({
+			next: () => {
+				// eslint-disable-next-line rxjs/no-nested-subscribe
+				this._ticketsService.getFilteredTickets().subscribe({
+					next: (tickets) => {
+						this.ticketsForModel = tickets.slice(0, this.countOfTicketsOnThePage);
+						this._cdr.markForCheck();
+					},
+				});
+			},
+		});
+	}
 
-    from(this._filterPanelService.potok$)
-    .subscribe({
-        next: (v) => {
-          this._ticketsService.getFilteredTickets().subscribe({
-            next: (tickets) => {
-              this.ticketsForModel = tickets.slice(0,this.countOfTicketsOnThePage);
-              this._cdr.markForCheck();
-            }
-          });
-        }
-      }
-    )
-  }
+	eRoundCorner(): typeof ERoundCorner {
+		return ERoundCorner;
+	}
 
-  public eRoundCorner(): typeof ERoundCorner {
-    return ERoundCorner;
-  }
+	eSizeButton(): typeof ESizeButton {
+		return ESizeButton;
+	}
 
-  public eSizeButton(): typeof ESizeButton {
-    return ESizeButton;
-  }
+	loadNewTickets(): void {
+		this.countOfTicketsOnThePage += this.countOfTicketsToload;
 
-  public loadNewTickets(e: MouseEvent): void {
+		this._ticketsService.getFilteredTickets().subscribe({
+			next: (tickets) => {
+				this.ticketsForModel = tickets.slice(0, this.countOfTicketsOnThePage);
+				this._cdr.markForCheck();
+			},
+			error: (e) => {
+				return new Error(e);
+			},
+		});
+	}
 
-    this.countOfTicketsOnThePage += this.countOfTicketsToload;
+	sortForChipest(): void {
+		this.ticketsForModel!.sort((t1, t2) => t1.price - t2.price);
 
-    this._ticketsService.getFilteredTickets().pipe().subscribe({
-      next: (tickets) => {
-        this.ticketsForModel = tickets.slice(0, this.countOfTicketsOnThePage);
-        this._cdr.markForCheck();
-      }
-    });
-  }
+		this.ticketsForModel! = this.ticketsForModel!.map((tOuter, index) => {
+			if (index + 1 === this.ticketsForModel!.length) {
+				return tOuter;
+			}
 
-  public sortForChipest(): void {
+			for (let i = index; i < this.ticketsForModel!.length - 1; i++) {
+				const isCompIdsEqual = tOuter.companyId === this.ticketsForModel![i + 1].companyId;
+				const isPricesEqual = tOuter.price === this.ticketsForModel![i + 1].price;
+				const isNotSegmentsEmpty =
+					tOuter.segments.length && this.ticketsForModel![i + 1].segments.length;
 
-      this.ticketsForModel!.sort((t1, t2) => t1.price - t2.price);
+				if (isCompIdsEqual && isPricesEqual && isNotSegmentsEmpty) {
+					tOuter.segments = [...tOuter.segments, this.ticketsForModel![i + 1].segments.pop()!];
+				} else {
+					break;
+				}
+			}
 
-      this.ticketsForModel! = this.ticketsForModel!.map((tOuter, index) => {
+			return tOuter;
+		});
+		this.ticketsForModel = this.ticketsForModel!.filter((t) => t.segments.length !== 0);
 
-        if (index + 1 === this.ticketsForModel!.length) return tOuter;
+		this._cdr.markForCheck();
+	}
 
-        for(let i = index; i < this.ticketsForModel!.length - 1; i++) {
-          const isCompIdsEqual = tOuter.companyId === this.ticketsForModel![i + 1].companyId; 
-          const isPricesEqual = tOuter.price === this.ticketsForModel![i + 1].price;
-          const isNotSegmentsEmpty = tOuter.segments.length && this.ticketsForModel![i + 1].segments.length;
+	sortForFastest(): void {
+		const arrayOfAllSegments = this.ticketsForModel?.flatMap((v) => {
+			return v.segments;
+		});
 
-          if (isCompIdsEqual && isPricesEqual && isNotSegmentsEmpty) {
-            tOuter.segments = [...tOuter.segments, this.ticketsForModel![i + 1].segments.pop()!];
-          } else {
-            break;
-          }
-            
-        }
-        return tOuter;
+		if (!arrayOfAllSegments) {
+			return;
+		}
 
-      })
-      this.ticketsForModel = this.ticketsForModel!.filter(t => t.segments.length !== 0);
+		this._ticketsService.getSegmentsByIds(arrayOfAllSegments).subscribe({
+			next: (segments: ISegment[]) => {
+				const resultSegments = segments.sort((s1, s2) => s1.duration - s2.duration);
 
-    this._cdr.markForCheck();
+				let newTicketsArray = resultSegments.map((s: ISegment): ITicket => {
+					const foundedTicket = this.ticketsForModel!.find((t) => t.segments.includes(s.id));
 
-  }
+					const res = { ...foundedTicket };
 
-  public sortForFastest(): void {
+					if (!res.segments) {
+						return res as ITicket;
+					}
 
-    const arrayOfAllSegments = this.ticketsForModel?.flatMap((v) => {
-      return v.segments;
-    });
-    
-    if(!arrayOfAllSegments) return;
+					res.segments = res.segments.filter((id) => id === s.id);
 
-    this._ticketsService.getSegmentsByIds(arrayOfAllSegments).subscribe({
-      next: (segments: ISegment[]) => {
-        const resultSegments = segments.sort((s1,s2) => s1.duration - s2.duration);
+					return res as ITicket;
+				});
 
-        let newTicketsArray = resultSegments.map((s: ISegment): ITicket => {
-          
-          const foundedTicket = this.ticketsForModel!.find((t) =>  t.segments.includes(s.id));
+				newTicketsArray = newTicketsArray.map((tOuter, index) => {
+					if (index + 1 === newTicketsArray.length) {
+						return tOuter;
+					}
 
-          let res = Object.assign({}, foundedTicket);
+					for (let i = index; i < newTicketsArray.length - 1; i++) {
+						const isCompIdsEqual = tOuter.companyId === newTicketsArray[i + 1].companyId;
+						const isPricesEqual = tOuter.price === newTicketsArray[i + 1].price;
+						const isNotSegmentsEmpty = newTicketsArray[i + 1].segments.length;
 
-          res!.segments = res!.segments.filter(id => id === s.id);
+						if (isCompIdsEqual && isPricesEqual && isNotSegmentsEmpty) {
+							tOuter.segments.push(newTicketsArray[i + 1].segments.pop()!);
+						} else {
+							tOuter.segments.sort((id1, id2) => {
+								const s1 = resultSegments.find((s) => id1 === s.id);
 
-          return res!;
+								const s2 = resultSegments.find((s) => id2 === s.id);
 
-        });
+								if (s1 && s2) {
+									return Number(s1.duration) - Number(s2.duration);
+								}
 
-        newTicketsArray = newTicketsArray.map((tOuter, index) => {
+								return 0;
+							});
 
-          if (index + 1 === newTicketsArray.length) return tOuter;
+							break;
+						}
+					}
 
-          for(let i = index; i < newTicketsArray.length - 1; i++) {
-            const isCompIdsEqual = tOuter.companyId === newTicketsArray[i + 1].companyId; 
-            const isPricesEqual = tOuter.price === newTicketsArray[i + 1].price;
-            const isNotSegmentsEmpty = newTicketsArray[i + 1].segments.length;
+					return tOuter;
+				});
 
-            if (isCompIdsEqual && isPricesEqual && isNotSegmentsEmpty) {
-              
-              tOuter.segments.push(newTicketsArray[i + 1].segments.pop()!);
+				this.ticketsForModel = newTicketsArray.filter((t) => t.segments.length !== 0);
+				this._cdr.markForCheck();
+			},
+			error: (e) => {
+				return new Error(e);
+			},
+		});
+	}
 
-            } else {
+	sortForOptimal(): void {
+		const arrayOfAllSegments = this.ticketsForModel?.flatMap((v) => {
+			return v.segments;
+		});
 
-              tOuter.segments.sort((id1,id2) => {
+		if (!arrayOfAllSegments) {
+			return;
+		}
 
-                const s1 = resultSegments.find(s => id1 === s.id);
+		this._ticketsService.getSegmentsByIds(arrayOfAllSegments).subscribe({
+			next: (segments: ISegment[]) => {
+				const newTicketsArray = segments.map((s: ISegment): ITicket => {
+					const foundedTicket = this.ticketsForModel!.find((t) => t.segments.includes(s.id));
 
-                const s2 = resultSegments.find(s => id2 === s.id);
+					const res = { ...foundedTicket };
 
-                if (s1 && s2) return +s1.duration - +s2.duration;
+					if (!res.segments) {
+						return res as ITicket;
+					}
 
-                return 0;
-                
-              });
+					res.segments = res.segments.filter((id) => id === s.id);
 
-              break;
-              
-            }
-          }
+					return res as ITicket;
+				});
 
-          return tOuter;
+				newTicketsArray.sort((t1, t2) => {
+					/*
+					 * соотношение цены данного рейса,
+					 * к общей сумме цен всего перечня рейсов, чем ниже kPrice1,
+					 * тем наоблее выгоден рейс
+					 */
 
-        })
+					const summaryOfPricesOfTickets = newTicketsArray
+						.map((a) => a.price)
+						.reduce((a, b) => a + b);
 
-        this.ticketsForModel = newTicketsArray.filter(t => t.segments.length !== 0);
-        this._cdr.markForCheck();
+					const kPrice1 = t1.price / summaryOfPricesOfTickets;
+					const kPrice2 = t2.price / summaryOfPricesOfTickets;
 
-      },
-      error: (e) => {
-        console.log(e)
-      }
-    })
-    
-  }
+					/*
+					 * соотношение времени полета данного рейса,
+					 * к общей сумме всех времен полетов, чем ниже kDuration,
+					 * тем наоблее выгоден рейс
+					 */
 
-  public sortForOptimal(): void {
-    const arrayOfAllSegments = this.ticketsForModel?.flatMap((v) => {
-      return v.segments;
-    });
+					const summaryOfDurationsOfTickets = segments
+						.map((a) => a.duration)
+						.reduce((a, b) => a + b);
 
-    if(!arrayOfAllSegments) return;
+					const kDuration1 =
+						segments.find((s) => s.id === t1.segments[0])!.duration / summaryOfDurationsOfTickets;
+					const kDuration2 =
+						segments.find((s) => s.id === t2.segments[0])!.duration / summaryOfDurationsOfTickets;
 
-    this._ticketsService.getSegmentsByIds(arrayOfAllSegments).subscribe({
-      next: (segments: ISegment[]) => {
-        
-        let newTicketsArray = segments.map((s: ISegment): ITicket => {
-          
-          const foundedTicket = this.ticketsForModel!.find((t) =>  t.segments.includes(s.id));
+					/*
+					 * Чем ниже сумма kPrice и kDuration, тем оптимальнее билет,
+					 * по критериям цена - время полета
+					 */
 
-          let res = Object.assign({}, foundedTicket);
+					return kPrice1 + kDuration1 - (kPrice2 + kDuration2);
+				});
 
-          res!.segments = res!.segments.filter(id => id === s.id);
+				this.ticketsForModel = newTicketsArray.filter((t) => t.segments.length !== 0);
 
-          return res!;
+				this._cdr.markForCheck();
+			},
+			error: (e) => {
+				return new Error(e);
+			},
+		});
+	}
 
-        });
-
-        newTicketsArray.sort((t1,t2) => {
-
-          /*
-          * соотношение цены данного рейса,
-          * к общей сумме цен всего перечня рейсов, чем ниже kPrice1, 
-          * тем наоблее выгоден рейс
-          */
-
-          const summaryOfPricesOfTickets = newTicketsArray.map((a) => a.price).reduce((a,b) => a + b);
-
-          const kPrice1 = t1.price / summaryOfPricesOfTickets; 
-          const kPrice2 = t2.price / summaryOfPricesOfTickets; 
-
-          
-          /*
-          * соотношение времени полета данного рейса,
-          * к общей сумме всех времен полетов, чем ниже kDuration, 
-          * тем наоблее выгоден рейс
-          */
-
-          const summaryOfDurationsOfTickets = segments.map((a) => a.duration).reduce((a,b) => a + b);
-
-          const kDuration1 = segments.find(s => s.id === t1.segments[0])!.duration / summaryOfDurationsOfTickets; 
-          const kDuration2 = segments.find(s => s.id === t2.segments[0])!.duration / summaryOfDurationsOfTickets; 
-
-          /*
-          * Чем ниже сумма kPrice и kDuration, тем оптимальнее билет,
-          * по критериям цена - время полета
-          */
-
-          return (kPrice1 + kDuration1) - (kPrice2 + kDuration2);
-        })
-
-        this.ticketsForModel = newTicketsArray.filter(t => t.segments.length !== 0);
-        
-        this._cdr.markForCheck();
-      },
-      error: (e) => {
-        console.log(e)
-      }
-    })
-  }
-
-  public trackByIdAndIndex(_index: number, item: ITicket): string {
-    return `${item.id} ${_index} ${item.segments.length}`;
-  }
-
+	trackByIdAndIndex(_index: number, item: ITicket): string {
+		return `${item.id} ${_index} ${item.segments.length}`;
+	}
 }

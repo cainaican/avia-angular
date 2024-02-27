@@ -1,90 +1,93 @@
-import { Injectable } from '@angular/core';
+import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { ICompany, ISegment, ITicket } from '../models/i-ticket';
-import { Observable, filter, forkJoin, map } from 'rxjs';
-import { FilterPanelService } from '../panels/filter-panel/filter-panel.service';
+import { Observable, forkJoin, map } from "rxjs";
+import { ICompany, ISegment, ITicket } from "../models/i-ticket";
+import { FilterPanelService } from "../panels/filter-panel/filter-panel.service";
 
 @Injectable({
-  providedIn: 'root'
+	providedIn: "root",
 })
 export class TicketsService {
+	tickets$: Observable<ITicket[]> | null = null;
 
+	constructor(
+		private readonly _httpClient: HttpClient,
+		private readonly _filterPanelService: FilterPanelService, // eslint-disable-next-line no-empty-function
+	) {}
 
-  public filterObject: {stops: [boolean, boolean, boolean, boolean], all: boolean} = {stops: [false, false, false, false], all: true};
+	getTickets(): Observable<ITicket[]> {
+		return this._httpClient.get<ITicket[]>("./assets/json/tickets.json");
+	}
 
-  public tickets$: Observable<ITicket[]> | null = null;
+	getCompanyById(id: string): Observable<ICompany | undefined> {
+		return this._httpClient.get<ICompany[]>("./assets/json/companies.json").pipe(
+			map((companies: ICompany[]) => {
+				return companies.find((comp) => comp.id === id);
+			}),
+		);
+	}
 
-  constructor(
-    private _httpClient: HttpClient,
-    private _filterPanelService: FilterPanelService
-  ) { }
+	getCompanies(): Observable<ICompany[] | undefined> {
+		return this._httpClient.get<ICompany[]>("./assets/json/companies.json");
+	}
 
-  getTickets(): Observable<ITicket[]>{
-    return this._httpClient.get<ITicket[]>("./assets/json/tickets.json")
-  }
+	getSegmentsByIds(ids: string[]): Observable<ISegment[]> {
+		return this._httpClient.get<ISegment[]>("./assets/json/segments.json").pipe(
+			map((segments: ISegment[]) => {
+				return segments.filter((seg) => ids.includes(seg.id));
+			}),
+		);
+	}
 
-  getCompanyById(id: string): Observable<ICompany | undefined>{
-    return this._httpClient.get<ICompany[]>("./assets/json/companies.json").pipe(
-      map((companies:ICompany[]) => {
-        return companies.find((comp) => comp.id === id);
-      })
-    );
-  }
+	getSegments(): Observable<ISegment[]> {
+		return this._httpClient.get<ISegment[]>("./assets/json/segments.json");
+	}
 
-  getCompanies(): Observable<ICompany[] | undefined>{
-    return this._httpClient.get<ICompany[]>("./assets/json/companies.json");
-  }
+	getFilteredTickets(): Observable<ITicket[]> {
+		return forkJoin([this.getTickets(), this.getCompanies(), this.getSegments()]).pipe(
+			map(([tickets, , segments]) => {
+				const result = tickets.filter((ticket) => {
+					ticket.segments = ticket.segments.filter((seg) => {
+						const values: boolean[] = Object.values(this._filterPanelService.model);
 
-  getSegmentsByIds(ids: string[]): Observable<ISegment[]>{
-    return this._httpClient.get<ISegment[]>("./assets/json/segments.json").pipe(
-      map((segments:ISegment[]) => {
-        return segments.filter((seg) => ids.includes(seg.id));
-      })
-    );
-  }
+						if (!values.includes(true)) {
+							return true;
+						}
 
-  getSegments(): Observable<ISegment[]>{
-    return this._httpClient.get<ISegment[]>("./assets/json/segments.json");
-  }
+						if (this._filterPanelService.allTransfers) {
+							return true;
+						}
 
+						const s1 = segments.find((segment) => segment.id === seg);
 
-  getFilteredTickets(): Observable<ITicket[]> {
-    return forkJoin(
-      this.getTickets(),
-      this.getCompanies(),
-      this.getSegments(),
-    ).pipe(
-      map(([tickets, companies, segments]) => {
-        const result = tickets.filter((ticket) => {
+						let res: boolean;
 
-          ticket.segments = ticket.segments.filter(seg => {
+						switch (s1?.stops.length) {
+							case 0:
+								res = this._filterPanelService.withoutStops;
+								break;
+							case 1:
+								res = this._filterPanelService.oneStop;
+								break;
+							case 2:
+								res = this._filterPanelService.twoStops;
+								break;
+							case 3:
+								res = this._filterPanelService.threeStops;
+								break;
+							default:
+								res = true;
+								break;
+						}
 
-            const s1 = segments.find(segment => segment.id === seg);
+						return res;
+					});
 
-            let res: boolean;
+					return ticket.segments.length > 0;
+				});
 
-            switch (s1?.stops.length) {
-              case 0: res = this._filterPanelService.model.withoutStops || this._filterPanelService.model.allTransfers; 
-                break;
-              case 1: res = this._filterPanelService.model.oneStop; 
-                break;
-              case 2: res = this._filterPanelService.model.twoStops; 
-                break;
-              case 3: res = this._filterPanelService.model.threeStops; 
-                break;
-              default: res = this._filterPanelService.model.allTransfers;
-                break;
-            }
-            return res;
-          });
-
-          return ticket.segments.length > 0;
-        })
-
-        return result;
-      })
-    )
-  }
-
+				return result;
+			}),
+		);
+	}
 }
-

@@ -113,7 +113,7 @@ module.exports = {
 			rules: {
 				"import/no-commonjs": "off",
 				"import/unambiguous": "off",
-				"import/no-deprecated": "warn",
+				"import/no-deprecated": "off",
 				"import/prefer-default-export": "off",
 				"import/default": "error",
 				"import/extensions": [
@@ -215,6 +215,7 @@ module.exports = {
 				"rxjs/no-connectable": "error",
 				"rxjs/no-ignored-observable": "error",
 				"rxjs/no-topromise": "error",
+				"rxjs/no-implicit-any-catch": "off",
 				"unicorn/prefer-string-slice": "error",
 				"unicorn/no-array-push-push": "error",
 				"unicorn/require-number-to-fixed-digits-argument": "error",

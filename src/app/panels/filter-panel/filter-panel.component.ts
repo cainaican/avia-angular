@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from "@angular/core";
 import { TicketsService } from "src/app/services/tickets.service";
-import { FilterPanelService, IFilterModel } from "./filter-panel.service";
+import { FilterPanelService } from "./filter-panel.service";
 
 @Component({
 	selector: "app-filter-panel",
@@ -9,12 +9,17 @@ import { FilterPanelService, IFilterModel } from "./filter-panel.service";
 	changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterPanelComponent {
-	filterModel: IFilterModel | null = null;
+	filterModel: FilterPanelService | null = null;
 
 	constructor(
 		private readonly _ticketsService: TicketsService,
 		private readonly _filterPanelService: FilterPanelService,
 	) {
-		this.filterModel = this._filterPanelService.model;
+		this.filterModel = this._filterPanelService;
+		// this.store$.subscribe({
+		// 	next: (store) => {
+		// 		this.filterModel = store.filter;
+		// 	}
+		// })
 	}
 }
