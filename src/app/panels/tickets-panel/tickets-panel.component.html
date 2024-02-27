@@ -1,36 +1,29 @@
 <div>
-  <app-button
-    [textButton]="'Самый дешевый'"
-    [roundCornerClass]="eRoundCorner().left"
-    (click)="sortForChipest()"
+	<app-button
+		[textButton]="'Самый дешевый'"
+		[roundCornerClass]="eRoundCorner().left"
+		(click)="sortForChipest()"
+	></app-button>
 
-  ></app-button>
+	<app-button [textButton]="'Самый быстрый'" (click)="sortForFastest()"></app-button>
 
-  <app-button
-    [textButton]="'Самый быстрый'"
-    (click)="sortForFastest()"
-
-  ></app-button>
-
-  <app-button
-    [textButton]="'оптимальный'"
-    [roundCornerClass]="eRoundCorner().right"
-    (click)="sortForOptimal()"
-
-  ></app-button>
+	<app-button
+		[textButton]="'оптимальный'"
+		[roundCornerClass]="eRoundCorner().right"
+		(click)="sortForOptimal()"
+	></app-button>
 </div>
 <div>
-  <ng-container *ngIf="ticketsForModel; let ticket">
-    <ng-container *ngFor="let item of ticketsForModel; trackBy: trackByIdAndIndex" >
-      <app-ticket [model]="item">
-    
-      </app-ticket>
-    </ng-container>
-  </ng-container>
+	<ng-container *ngIf="ticketsForModel; let ticket">
+		<ng-container *ngFor="let item of ticketsForModel; trackBy: trackByIdAndIndex">
+			<app-ticket [model]="item"> </app-ticket>
+		</ng-container>
+	</ng-container>
 
-  <app-button [textButton]="'Загрузить еще'" 
-              [sizeButtonClass]="eSizeButton().big" 
-              [roundCornerClass]="eRoundCorner().both" 
-              (click)="loadNewTickets($event)"
-  ></app-button>
+	<app-button
+		[textButton]="'Загрузить еще'"
+		[sizeButtonClass]="eSizeButton().big"
+		[roundCornerClass]="eRoundCorner().both"
+		(click)="loadNewTickets()"
+	></app-button>
 </div>
