@@ -14781,7 +14781,7 @@
 									1,
 									"refs__back",
 								],
-								["src", "../assets/backPr.png", "alt", "portfolio", 1, "refs__back-img"],
+								["src", "./assets/backPr.png", "alt", "portfolio", 1, "refs__back-img"],
 								[
 									"href",
 									"https://github.com/cainaican/avia-angular",
@@ -14790,7 +14790,7 @@
 									1,
 									"refs__back",
 								],
-								["src", "../assets/ghPr.png", "alt", "gitHub", 1, "refs__back-img"],
+								["src", "./assets/ghPr.png", "alt", "gitHub", 1, "refs__back-img"],
 								[1, "logo-panel"],
 								[1, "filter-panel"],
 								[1, "tickets-panel"],
