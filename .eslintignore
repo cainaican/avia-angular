@@ -42,3 +42,4 @@ testem.log
 Thumbs.db
 
 commitlint.config.js
+docs/
